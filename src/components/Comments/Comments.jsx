@@ -5,16 +5,22 @@ import { Grid } from '../Grid/Grid';
 // import { comments } from '../../helpers/comments';
 import { useGetCommentsQuery } from '../../redux/commentApi';
 import { Loader } from '../Loader/Loader';
+import { useSelector } from 'react-redux';
+import { selectFilter } from '../../redux/filterSlice';
 
 export const Comments = () => {
   const { data: comments, isFetching, isError } = useGetCommentsQuery();
-  console.log(comments);
-
+  const filter = useSelector(selectFilter);
+  const filteredComments = comments?.filter(({ content }) =>
+    content.toLowerCase().includes(filter.toLowerCase())
+  );
   return (
     <Grid>
       {isFetching && <Loader />}
       {comments &&
-        comments.map(comment => <Comment key={comment.id} {...comment} />)}
+        filteredComments.map(comment => (
+          <Comment key={comment.id} {...comment} />
+        ))}
     </Grid>
   );
 };
